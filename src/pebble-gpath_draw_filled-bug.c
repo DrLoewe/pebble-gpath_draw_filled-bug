@@ -1,43 +1,40 @@
 #include <pebble.h>
 
 static Window *window;
-static TextLayer *text_layer;
+static Layer *my_layer;
 
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Select");
-}
+#define TOP_MARGIN 30
+#define HEIGHT 100
 
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Up");
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Down");
-}
-
-static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+void layer_update_proc(Layer *layer, GContext *ctx) {
+  static GPoint points[3] = {
+    { .x = 10, .y = 0 },
+    { .x = 124, .y = 0 },
+    { .x = 57, .y = HEIGHT }
+  };
+  static GPathInfo pathinfo = { .num_points = 3, .points = points };
+  GPath *path = gpath_create(&pathinfo);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  gpath_draw_outline(ctx, path);
+  gpath_draw_filled(ctx, path);
+  gpath_destroy(path);
 }
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
-  text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-  text_layer_set_text(text_layer, "Press a button");
-  text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(text_layer));
+  my_layer = layer_create((GRect) { .origin = { 0,TOP_MARGIN }, .size = { bounds.size.w, HEIGHT} });
+  layer_set_update_proc(my_layer, layer_update_proc);
+  layer_add_child(window_layer, my_layer);
 }
 
 static void window_unload(Window *window) {
-  text_layer_destroy(text_layer);
+  layer_destroy(my_layer);
 }
 
 static void init(void) {
   window = window_create();
-  window_set_click_config_provider(window, click_config_provider);
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,
     .unload = window_unload,
