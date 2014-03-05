@@ -1,0 +1,17 @@
+{
+  "uuid": "3a3a4763-19f7-4406-bb65-d9bb78beaaaa",
+  "shortName": "pebble-gpath_draw_filled-bug",
+  "longName": "pebble-gpath_draw_filled-bug",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
